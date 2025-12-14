@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -49,17 +52,21 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-
+      
           git config user.name "vhs-bot"
           git config user.email "vhs-bot@users.noreply.github.com"
-
-          git add state.json kursliste.pdf || true
+      
+          # Weniger Konflikte: PDF optional NICHT committen
+          git add state.json || true
+          # wenn du das PDF wirklich willst, dann:
+          # git add state.json kursliste.pdf || true
+      
           git commit -m "Update VHS state" || exit 0
-
-          # Remote changes integrieren (verhindert fetch-first rejects)
+      
+          # Remote integrieren
           git pull --rebase origin main
-
-          # Push mit Retry (gegen Race bei parallelen Runs)
+      
+          # Push mit Retry (gegen parallele Runs)
           for i in 1 2 3; do
             git push && break
             echo "Push failed, retry $i..."
