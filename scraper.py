@@ -210,7 +210,7 @@ def main() -> None:
     new_courses, removed_courses = diff_courses(prev_state, curr_courses)
 
     # Ausgabe für Actions-Logs
-    print("DEBUG: Gefundene Kurs-IDs:", sorted(curr_courses.keys()))
+    print(f"Gefunden (Kursnummern=FK*): {len(curr_courses)} Kurse")
     print(f"Gefunden (Bezirk={DISTRICT_RE}): {len(curr_courses)} Kurse")
     print(f"Neu seit letztem Lauf: {len(new_courses)}")
     if new_courses:
