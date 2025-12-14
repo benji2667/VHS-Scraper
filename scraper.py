@@ -14,14 +14,13 @@ SEARCH_URL = (
     "?direkt=1&begonnen=0&beendet=0&stichw=Goldschmieden%7CSchmuck"
 )
 
-DISTRICT_WANTED = "Friedrichshain-Kreuzberg"
+DISTRICT_RE = re.compile(r"Friedrichshai\s*n-Kreuzberg", re.IGNORECASE)
 STATE_PATH = "state.json"
 PDF_PATH = "kursliste.pdf"
 
 
 # Kursnummern in deinem PDF sehen so aus: FK2.604-A, FK2.664-C etc.
-COURSE_ID_RE = re.compile(r"\b([A-ZÄÖÜ]{1,3}\d\.\d{3}-[A-Z])\b")
-
+COURSE_ID_RE = re.compile(r"\b(FK\d\.\d{3}(?:-[A-Z])?)\b")
 
 @dataclass
 class Course:
@@ -151,7 +150,7 @@ def pdf_to_courses(pdf_bytes: bytes) -> Dict[str, Course]:
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         block = text[start:end].strip()
 
-        if DISTRICT_WANTED not in block:
+        if not DISTRICT_RE.search(block):
             continue
 
         # Titel-Heuristik:
@@ -214,6 +213,7 @@ def main() -> None:
     new_courses, removed_courses = diff_courses(prev_state, curr_courses)
 
     # Ausgabe für Actions-Logs
+    print("DEBUG: Gefundene Kurs-IDs:", sorted(curr_courses.keys()))
     print(f"Gefunden (Bezirk={DISTRICT_WANTED}): {len(curr_courses)} Kurse")
     print(f"Neu seit letztem Lauf: {len(new_courses)}")
     if new_courses:
