@@ -46,8 +46,21 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
+
           git config user.name "vhs-bot"
           git config user.email "vhs-bot@users.noreply.github.com"
+
           git add state.json kursliste.pdf || true
-          git commit -m "Update VHS state"
-          git push
+          git commit -m "Update VHS state" || exit 0
+
+          # Remote changes integrieren (verhindert fetch-first rejects)
+          git pull --rebase origin main
+
+          # Push mit Retry (gegen Race bei parallelen Runs)
+          for i in 1 2 3; do
+            git push && break
+            echo "Push failed, retry $i..."
+            sleep 2
+            git pull --rebase origin main
+          done
+
