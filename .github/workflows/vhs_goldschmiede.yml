@@ -11,6 +11,9 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
+    concurrency:
+      group: vhs-goldschmiede-state
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
