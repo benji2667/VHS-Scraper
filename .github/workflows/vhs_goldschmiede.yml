@@ -1,0 +1,43 @@
+name: VHS Goldschmiede (FK) Watcher
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # täglich 06:17 UTC (anpassen)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run scraper
+        id: scrape
+        run: |
+          python scraper.py
+
+      - name: Commit updated state
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "vhs-bot"
+          git config user.email "vhs-bot@users.noreply.github.com"
+          git add state.json kursliste.pdf || true
+          git commit -m "Update VHS state"
+          git push
