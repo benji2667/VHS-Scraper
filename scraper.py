@@ -95,21 +95,31 @@ def download_pdf_via_webforms(session: requests.Session) -> bytes:
             "Referer": post_url,
         },
     )
+
+    # Debug-Ausgaben (landen in GitHub Actions Logs)
+    print("POST status:", r2.status_code)
+    print("POST final URL:", r2.url)
+    print("Resp Content-Type:", r2.headers.get("Content-Type"))
+    print("Resp Content-Disposition:", r2.headers.get("Content-Disposition"))
+
     r2.raise_for_status()
 
     ctype = (r2.headers.get("Content-Type") or "").lower()
     disp = (r2.headers.get("Content-Disposition") or "").lower()
 
-    # Heuristik: PDF kommt oft als octet-stream + attachment
     if "pdf" not in ctype and "attachment" not in disp:
-        # Debug: ein Stück HTML loggen (ohne alles zu spammen)
-        snippet = r2.text[:500].replace("\n", " ")
+        # speichere Response zum Debuggen
+        with open("debug_response.html", "wb") as f:
+            f.write(r2.content)
+        snippet = r2.text[:800].replace("\n", " ")
         raise RuntimeError(
-            f"Erwartete PDF-Response, bekam Content-Type={ctype}, Content-Disposition={disp}. "
-            f"Response-Snippet: {snippet}"
+            "Erwartete PDF-Response, bekam vermutlich HTML. "
+            f"Content-Type={ctype}, Content-Disposition={disp}. "
+            f"Snippet: {snippet}"
         )
 
     return r2.content
+
 
 
 def pdf_to_courses(pdf_bytes: bytes) -> Dict[str, Course]:
