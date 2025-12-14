@@ -24,7 +24,6 @@ COURSE_ID_RE = re.compile(r"\b(FK\d\.\d{3}(?:-[A-Z])?)\b")
 @dataclass
 class Course:
     course_id: str
-    : str
     title: str
     raw: str  # kompletter Textblock zur Sicherheit
 
