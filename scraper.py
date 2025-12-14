@@ -150,9 +150,6 @@ def pdf_to_courses(pdf_bytes: bytes) -> Dict[str, Course]:
         end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
         block = text[start:end].strip()
 
-        if not DISTRICT_RE.search(block):
-            continue
-
         # Titel-Heuristik:
         # In vielen Exporten steht nach der Kursnummer in derselben Zeile oder kurz danach der Titel.
         # Wir nehmen: erste Zeile ohne Kursnummer und ohne Bezirk als "title candidate".
@@ -161,7 +158,7 @@ def pdf_to_courses(pdf_bytes: bytes) -> Dict[str, Course]:
 
         # Entferne Kursnummer aus erster Zeile
         for ln in lines[:6]:  # nur früh suchen
-            if DISTRICT_WANTED in ln:
+            if DISTRICT_RE in ln:
                 continue
             if COURSE_ID_RE.search(ln):
                 # Kursnummer-Zeile -> Rest nach ID als Titelanteil
@@ -177,7 +174,7 @@ def pdf_to_courses(pdf_bytes: bytes) -> Dict[str, Course]:
 
         courses[cid] = Course(
             course_id=cid,
-            district=DISTRICT_WANTED,
+            district=DISTRICT_RE,
             title=title,
             raw=block,
         )
@@ -214,7 +211,7 @@ def main() -> None:
 
     # Ausgabe für Actions-Logs
     print("DEBUG: Gefundene Kurs-IDs:", sorted(curr_courses.keys()))
-    print(f"Gefunden (Bezirk={DISTRICT_WANTED}): {len(curr_courses)} Kurse")
+    print(f"Gefunden (Bezirk={DISTRICT_RE}): {len(curr_courses)} Kurse")
     print(f"Neu seit letztem Lauf: {len(new_courses)}")
     if new_courses:
         print("\nNEUE KURSE:")
