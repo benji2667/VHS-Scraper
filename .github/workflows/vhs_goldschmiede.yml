@@ -30,6 +30,16 @@ jobs:
         run: |
           python scraper.py
 
+      - name: Upload debug artifacts (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug
+          path: |
+            debug_response.html
+            kursliste.pdf
+            state.json
+
       - name: Commit updated state
         run: |
           if git diff --quiet; then
