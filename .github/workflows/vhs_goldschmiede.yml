@@ -11,17 +11,19 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    
     concurrency:
       group: vhs-goldschmiede-state
       cancel-in-progress: false
-      
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
+      - name: Sync with remote (before changes)
+        run: |
+          git pull --rebase origin main
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -29,42 +31,24 @@ jobs:
 
       - name: Install deps
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run scraper
-        id: scrape
         run: |
           python scraper.py
-
-      - name: Upload debug artifacts (always)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug
-          path: |
-            debug_response.html
-            kursliste.pdf
-            state.json
 
       - name: Commit updated state
         run: |
           git config user.name "vhs-bot"
           git config user.email "vhs-bot@users.noreply.github.com"
-      
-          # IMMER zuerst aktuellen Stand holen
-          git pull --rebase origin main
-      
-          # Nur state.json versionieren
           if git diff --quiet; then
             echo "No changes to commit."
             exit 0
           fi
-      
           git add state.json
-          git commit -m "Update VHS state"
-      
-          # Push (einfach, kein Retry nötig wenn concurrency gesetzt ist)
+          git commit -m "Update VHS state" || exit 0
           git push
+
+
 
 
