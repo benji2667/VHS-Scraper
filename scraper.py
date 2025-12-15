@@ -205,6 +205,12 @@ def main() -> None:
     curr_courses = pdf_to_courses(pdf_bytes)
     new_courses, removed_courses = diff_courses(prev_state, curr_courses)
 
+    if new_courses:
+    with open("new_courses.md", "w", encoding="utf-8") as f:
+        f.write("# Neue VHS-Kurse (FK)\n\n")
+        for c in new_courses:
+            f.write(f"- **{c.course_id}** — {c.title}\n")
+
     # Ausgabe für Actions-Logs
     print(f"Gefunden (Kursnummern=FK*): {len(curr_courses)} Kurse")
     print(f"Neu seit letztem Lauf: {len(new_courses)}")
