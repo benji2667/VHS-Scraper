@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import date
 
-BOT_TOKEN = "8059336101:AAEosAOEZuEzuz6v7MB4ra2nwrsH3EJl-xQ"
+BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT_IDS = ["5930243179", "7570414944"]
 
 SEARCH_URL = (
