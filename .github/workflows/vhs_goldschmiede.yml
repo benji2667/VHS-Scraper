@@ -34,8 +34,22 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run scraper
-        run: |
-          python scraper.py
+        id: scrape
+        run: python scraper.py
+
+      - name: Create GitHub Issue if new courses
+        if: steps.scrape.outputs.has_new == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('new_courses.md', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Neue VHS-Kurse (FK) – ${new Date().toISOString().slice(0,10)}`,
+              body
+            });
 
       - name: Commit updated state
         run: |
