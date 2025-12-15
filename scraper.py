@@ -224,27 +224,6 @@ def main() -> None:
     curr_courses = pdf_to_courses(pdf_bytes)
     new_courses, removed_courses = diff_courses(prev_state, curr_courses)
 
-    if new_courses:
-    from datetime import date
-
-    lines = []
-    lines.append(f"🆕 *Neue VHS-Kurse (FK)* — {date.today().isoformat()}")
-    lines.append("")
-
-    with open("new_courses.md", "w", encoding="utf-8") as f:
-        f.write("# Neue VHS-Kurse (FK)\n\n")
-
-        for c in new_courses:
-            line = f"• *{c.course_id}* — {c.title}"
-            lines.append(line)
-            f.write(f"- **{c.course_id}** — {c.title}\n")
-
-    lines.append("")
-    lines.append(f"➡️ Insgesamt neu: *{len(new_courses)}*")
-
-    message = "\n".join(lines)
-    send_telegram_message(message)
-
     # Ausgabe für Actions-Logs
     print(f"Gefunden (Kursnummern=FK*): {len(curr_courses)} Kurse")
     print(f"Neu seit letztem Lauf: {len(new_courses)}")
@@ -254,6 +233,20 @@ def main() -> None:
             print(f"- {c.course_id} | {c.title}".strip())
     if removed_courses:
         print(f"\nEntfernt seit letztem Lauf: {len(removed_courses)}")
+
+    if new_courses:
+        lines = []
+        lines.append(f"🆕 *Neue VHS-Kurse (FK)* — {date.today().isoformat()}")
+        lines.append("")
+
+        for c in new_courses:
+            lines.append(f"• *{c.course_id}* — {c.title}")
+
+        lines.append("")
+        lines.append(f"➡️ Insgesamt neu: *{len(new_courses)}*")
+
+        message = "\n".join(lines)
+        send_telegram_message(message)
 
     # State aktualisieren
     save_state(STATE_PATH, curr_courses)
