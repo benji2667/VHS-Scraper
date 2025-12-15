@@ -8,6 +8,11 @@ import requests
 import pdfplumber
 from bs4 import BeautifulSoup
 
+import requests
+from datetime import date
+
+BOT_TOKEN = "8059336101:AAEosAOEZuEzuz6v7MB4ra2nwrsH3EJl-xQ"
+CHAT_IDS = ["5930243179", "7570414944"]
 
 SEARCH_URL = (
     "https://www.vhsit.berlin.de/vhskurse/BusinessPages/CourseSearch.aspx"
@@ -189,6 +194,20 @@ def diff_courses(prev: Dict[str, dict], curr: Dict[str, Course]) -> Tuple[List[C
     removed_courses = [Course(**prev[cid]) for cid in removed_ids] if removed_ids else []
     return new_courses, removed_courses
 
+def send_telegram_message(text: str) -> None:
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    for chat_id in CHAT_IDS:
+        r = requests.post(
+            url,
+            json={
+                "chat_id": chat_id,
+                "text": text,
+                "parse_mode": "Markdown",
+                "disable_web_page_preview": True,
+            },
+            timeout=20,
+        )
+        r.raise_for_status()
 
 def main() -> None:
     prev_state = load_state(STATE_PATH)
@@ -206,10 +225,25 @@ def main() -> None:
     new_courses, removed_courses = diff_courses(prev_state, curr_courses)
 
     if new_courses:
+    from datetime import date
+
+    lines = []
+    lines.append(f"🆕 *Neue VHS-Kurse (FK)* — {date.today().isoformat()}")
+    lines.append("")
+
     with open("new_courses.md", "w", encoding="utf-8") as f:
         f.write("# Neue VHS-Kurse (FK)\n\n")
+
         for c in new_courses:
+            line = f"• *{c.course_id}* — {c.title}"
+            lines.append(line)
             f.write(f"- **{c.course_id}** — {c.title}\n")
+
+    lines.append("")
+    lines.append(f"➡️ Insgesamt neu: *{len(new_courses)}*")
+
+    message = "\n".join(lines)
+    send_telegram_message(message)
 
     # Ausgabe für Actions-Logs
     print(f"Gefunden (Kursnummern=FK*): {len(curr_courses)} Kurse")
