@@ -13,9 +13,16 @@ from datetime import date
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 if not BOT_TOKEN:
-    raise RuntimeError("Missing TELEGRAM_BOT_TOKEN (GitHub Secret not set?)")
-    
-CHAT_IDS = os.environ["TELEGRAM_CHAT_IDS"].split(",")
+    raise RuntimeError("Missing TELEGRAM_BOT_TOKEN (GitHub Secret not set)")
+
+CHAT_IDS_RAW = os.getenv("TELEGRAM_CHAT_IDS")
+if not CHAT_IDS_RAW:
+    raise RuntimeError("Missing TELEGRAM_CHAT_IDS (GitHub Secret not set)")
+
+CHAT_IDS = [x.strip() for x in CHAT_IDS_RAW.split(",") if x.strip()]
+if not CHAT_IDS:
+    raise RuntimeError("TELEGRAM_CHAT_IDS is empty or invalid (no chat IDs parsed)")
+
 
 SEARCH_URL = (
     "https://www.vhsit.berlin.de/vhskurse/BusinessPages/CourseSearch.aspx"
