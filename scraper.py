@@ -11,7 +11,10 @@ from bs4 import BeautifulSoup
 import requests
 from datetime import date
 
-BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+if not BOT_TOKEN:
+    raise RuntimeError("Missing TELEGRAM_BOT_TOKEN (GitHub Secret not set?)")
+    
 CHAT_IDS = ["5930243179", "7570414944"]
 
 SEARCH_URL = (
