@@ -37,6 +37,7 @@ jobs:
         id: scrape
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
         run: python scraper.py
 
       - name: Create GitHub Issue if new courses
