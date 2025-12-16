@@ -15,7 +15,7 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("Missing TELEGRAM_BOT_TOKEN (GitHub Secret not set?)")
     
-CHAT_IDS = ["5930243179", "7570414944"]
+CHAT_IDS = os.environ["TELEGRAM_CHAT_IDS"].split(",")
 
 SEARCH_URL = (
     "https://www.vhsit.berlin.de/vhskurse/BusinessPages/CourseSearch.aspx"
