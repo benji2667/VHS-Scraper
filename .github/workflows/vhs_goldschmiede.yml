@@ -2,44 +2,14 @@ name: VHS Goldschmiede (FK) Watcher
 
 on:
   schedule:
-    - cron: "17 6 * * *"   # täglich 06:17 UTC (anpassen)
+    - cron: "0 0,6,12,18 * * *"   # 4x täglich: 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: "0 8 * * 1"       # Heartbeat (Montag)
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-
-  telegram_test:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Send Telegram test message
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
-        run: |
-          python - << 'PY'
-          import os, requests, datetime
-
-          token = os.getenv("TELEGRAM_BOT_TOKEN")
-          chat_ids_raw = os.getenv("TELEGRAM_CHAT_IDS","")
-          chat_ids = [x.strip() for x in chat_ids_raw.split(",") if x.strip()]
-
-          if not token:
-              raise RuntimeError("Missing TELEGRAM_BOT_TOKEN")
-          if not chat_ids:
-              raise RuntimeError("Missing/empty TELEGRAM_CHAT_IDS")
-
-          msg = f"✅ VHS-Scraper Telegram Test — {datetime.datetime.utcnow().isoformat()}Z"
-          url = f"https://api.telegram.org/bot{token}/sendMessage"
-
-          for cid in chat_ids:
-              r = requests.post(url, json={"chat_id": cid, "text": msg, "disable_web_page_preview": True}, timeout=20)
-              r.raise_for_status()
-              print("Sent to", cid)
-          PY
-
   run:
     runs-on: ubuntu-latest
     concurrency:
@@ -96,6 +66,47 @@ jobs:
           git add state.json
           git commit -m "Update VHS state" || exit 0
           git push
+
+  heartbeat:                  # ← NEUER Job, HIER einfügen
+      runs-on: ubuntu-latest
+      steps:
+        - name: Send weekly Telegram heartbeat
+          env:
+            TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+            TELEGRAM_CHAT_IDS: ${{ secrets.TELEGRAM_CHAT_IDS }}
+          run: |
+            python - << 'PY'
+            import os, requests, datetime
+  
+            token = os.getenv("TELEGRAM_BOT_TOKEN")
+            chat_ids = [x.strip() for x in os.getenv("TELEGRAM_CHAT_IDS","").split(",") if x.strip()]
+  
+            if not token:
+                raise RuntimeError("Missing TELEGRAM_BOT_TOKEN")
+            if not chat_ids:
+                raise RuntimeError("Missing TELEGRAM_CHAT_IDS")
+  
+            msg = (
+                "💓 *VHS-Scraper Heartbeat*\n\n"
+                f"🕒 {datetime.datetime.utcnow().isoformat()} UTC\n"
+                "✅ Workflow läuft\n"
+                "✅ Secrets ok\n"
+                "✅ Telegram erreichbar"
+            )
+  
+            url = f"https://api.telegram.org/bot{token}/sendMessage"
+            for cid in chat_ids:
+                requests.post(
+                    url,
+                    json={
+                        "chat_id": cid,
+                        "text": msg,
+                        "parse_mode": "Markdown",
+                        "disable_web_page_preview": True
+                    },
+                    timeout=20
+                ).raise_for_status()
+            PY
 
 
 
