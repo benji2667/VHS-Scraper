@@ -67,7 +67,7 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git add state.json
+          git add state_*.json
           git commit -m "Update VHS state" || exit 0
           git push
 
