@@ -11,7 +11,10 @@ permissions:
 
 jobs:
   run:
-    if: github.event_name == 'schedule' && github.event.schedule != '0 8 * * 1'
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && github.event.schedule != '0 8 * * 1')
+      
     runs-on: ubuntu-latest
     concurrency:
       group: vhs-goldschmiede-state
@@ -69,7 +72,10 @@ jobs:
           git push
 
   heartbeat:                  # ← NEUER Job, HIER einfügen
-      if: github.event_name == 'schedule' && github.event.schedule == '0 8 * * 1'
+      if: >
+        github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'schedule' && github.event.schedule == '0 8 * * 1')
+      
       runs-on: ubuntu-latest
       steps:
         - name: Send weekly Telegram heartbeat
