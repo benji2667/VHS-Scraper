@@ -24,12 +24,19 @@ if not CHAT_IDS:
     raise RuntimeError("TELEGRAM_CHAT_IDS is empty or invalid (no chat IDs parsed)")
 
 
-SEARCH_URL = (
-    "https://www.vhsit.berlin.de/vhskurse/BusinessPages/CourseSearch.aspx"
-    "?direkt=1&begonnen=0&beendet=0&stichw=Goldschmieden%7CSchmuck"
-)
+WATCHERS = [
+    {
+        "name": "Goldschmieden & Schmuck",
+        "search_url": "https://www.vhsit.berlin.de/vhskurse/BusinessPages/CourseSearch.aspx?direkt=1&begonnen=0&beendet=0&stichw=Goldschmieden%7CSchmuck",
+        "state_path": "state_goldschmiede.json",
+    },
+    {
+        "name": "Keramik / Töpfern / Porzellan",
+        "search_url": "https://www.vhsit.berlin.de/vhskurse/BusinessPages/CourseSearch.aspx?direkt=1&begonnen=0&beendet=0&stichw=%22Plastisches%20Gestalten%22%20Keramik",
+        "state_path": "state_keramik.json",
+    },
+]
 
-STATE_PATH = "state.json"
 PDF_PATH = "kursliste.pdf"
 
 
@@ -66,15 +73,8 @@ def extract_hidden_fields(html: str) -> Dict[str, str]:
     return fields
 
 
-def download_pdf_via_webforms(session: requests.Session) -> bytes:
-    """
-    WebForms-Flow:
-      1) GET SEARCH_URL -> landet auf CourseList.aspx (oder bleibt dort)
-      2) Hidden fields aus HTML ziehen
-      3) POST mit hidden fields + Submit-Button-Feld -> PDF
-    """
-    # Step 1: GET initial search/result page
-    r1 = session.get(SEARCH_URL, timeout=30)
+def download_pdf_via_webforms(session: requests.Session, search_url: str) -> bytes:
+    r1 = session.get(search_url, timeout=30)
     r1.raise_for_status()
 
     # In manchen WebForms-Flows führt SEARCH_URL direkt auf die Ergebnisliste,
@@ -220,46 +220,36 @@ def send_telegram_message(text: str) -> None:
         r.raise_for_status()
 
 def main() -> None:
-    prev_state = load_state(STATE_PATH)
-
     with requests.Session() as s:
         s.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (compatible; vhs-goldschmiede-bot/1.0)",
+                "User-Agent": "Mozilla/5.0 (compatible; vhs-bot/1.0)",
                 "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
             }
         )
-        pdf_bytes = download_pdf_via_webforms(s)
 
-    curr_courses = pdf_to_courses(pdf_bytes)
-    new_courses, removed_courses = diff_courses(prev_state, curr_courses)
+        for w in WATCHERS:
+            prev_state = load_state(w["state_path"])
 
-    # Ausgabe für Actions-Logs
-    print(f"Gefunden (Kursnummern=FK*): {len(curr_courses)} Kurse")
-    print(f"Neu seit letztem Lauf: {len(new_courses)}")
-    if new_courses:
-        print("\nNEUE KURSE:")
-        for c in new_courses:
-            print(f"- {c.course_id} | {c.title}".strip())
-    if removed_courses:
-        print(f"\nEntfernt seit letztem Lauf: {len(removed_courses)}")
+            pdf_bytes = download_pdf_via_webforms(s, w["search_url"])
+            curr_courses = pdf_to_courses(pdf_bytes)
+            new_courses, removed_courses = diff_courses(prev_state, curr_courses)
 
-    if new_courses:
-        lines = []
-        lines.append(f"🆕 *Neue VHS-Kurse (FK)* — {date.today().isoformat()}")
-        lines.append("")
+            print(f"[{w['name']}] Gefunden (Kursnummern=FK*): {len(curr_courses)} Kurse")
+            print(f"[{w['name']}] Neu seit letztem Lauf: {len(new_courses)}")
 
-        for c in new_courses:
-            lines.append(f"• *{c.course_id}* — {c.title}")
+            if new_courses:
+                lines = []
+                lines.append(f"🆕 *Neue VHS-Kurse (FK)* — *{w['name']}*")
+                lines.append("")
+                for c in new_courses:
+                    lines.append(f"• *{c.course_id}* — {c.title}")
+                lines.append("")
+                lines.append(f"➡️ Insgesamt neu: *{len(new_courses)}*")
 
-        lines.append("")
-        lines.append(f"➡️ Insgesamt neu: *{len(new_courses)}*")
+                send_telegram_message("\n".join(lines))
 
-        message = "\n".join(lines)
-        send_telegram_message(message)
-
-    # State aktualisieren
-    save_state(STATE_PATH, curr_courses)
+            save_state(w["state_path"], curr_courses)
 
     # GitHub Actions Output: Flag setzen, ob neu
     # (neue Output-Syntax)
