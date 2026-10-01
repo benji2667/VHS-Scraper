@@ -26,8 +26,13 @@
   },
   "FK2.635-D": {
     "course_id": "FK2.635-D",
-    "title": "Goldschmieden Kompakt mit 19.12.2026 belegt Aufnahme in € 28.50",
-    "raw": "FK2.635-D Goldschmieden Kompakt mit 19.12.2026 belegt Aufnahme in € 28.50\nn-Kreuzberg Silke (nur für Fortgeschrittene) 14:00:00 Warteliste (erm. €\nmöglich 21.00)\nFriedrichshai"
+    "title": "Goldschmieden Kompakt mit 29.11.2026 belegt Aufnahme in € 28.50",
+    "raw": "FK2.635-D Goldschmieden Kompakt mit 29.11.2026 belegt Aufnahme in € 28.50\nn-Kreuzberg Silke (nur für Fortgeschrittene) 14:00:00 Warteliste (erm. €\nmöglich 21.00)\nFriedrichshai"
+  },
+  "FK2.635": {
+    "course_id": "FK2.635",
+    "title": "D2 Goldschmieden Kompakt mit 19.12.2026 belegt Aufnahme in € 28.50",
+    "raw": "FK2.635-D2 Goldschmieden Kompakt mit 19.12.2026 belegt Aufnahme in € 28.50\nn-Kreuzberg Silke (nur für Fortgeschrittene) 14:00:00 Warteliste (erm. €\nmöglich 21.00)\nFriedrichshai"
   },
   "FK2.671": {
     "course_id": "FK2.671",
