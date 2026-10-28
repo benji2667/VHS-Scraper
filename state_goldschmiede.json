@@ -1,14 +1,4 @@
 {
-  "FK2.601-D": {
-    "course_id": "FK2.601-D",
-    "title": "Goldschmieden mit Britta 27.10.2026 belegt Aufnahme in € 128.80",
-    "raw": "FK2.601-D Goldschmieden mit Britta 27.10.2026 belegt Aufnahme in € 128.80\nn-Kreuzberg 15:00:00 Warteliste (erm. €\nmöglich 95.90)\nFriedrichshai"
-  },
-  "FK2.601-E": {
-    "course_id": "FK2.601-E",
-    "title": "Goldschmieden mit Britta 27.10.2026 belegt Aufnahme in € 128.80",
-    "raw": "FK2.601-E Goldschmieden mit Britta 27.10.2026 belegt Aufnahme in € 128.80\nn-Kreuzberg 18:30:00 Warteliste (erm. €\nmöglich 95.90)\nFriedrichshai"
-  },
   "FK2.601-F": {
     "course_id": "FK2.601-F",
     "title": "Goldschmieden mit Britta 29.10.2026 belegt Aufnahme in € 114.00",
@@ -37,6 +27,6 @@
   "FK2.671": {
     "course_id": "FK2.671",
     "title": "Goldschmieden mit Ruth 28.10.2026 belegt Aufnahme in € 152.00",
-    "raw": "FK2.671 Goldschmieden mit Ruth 28.10.2026 belegt Aufnahme in € 152.00\nn-Kreuzberg 18:00:00 Warteliste (erm. €\nmöglich 112.00)\nTreptow- TK-2600-H Kunst aus Scherben - Mosaik 28.11.2026 belegt Aufnahme in € 44.00\nKöpenick 11:00:00 Warteliste (erm. €\nmöglich 24.00)\nCharlottenbu CW210-209H Goldschmieden: 29.10.2026 belegt Aufnahme in € 125.20\nrg- Schmuckdesign 1 18:00:00 Warteliste (erm. €\nWilmersdorf möglich 69.40)\nSeite 2 von 3\nKursdetails\nDienstag, 27. Oktober 2026\nBezirk Kursnummer Kurstitel Beginn Plätze Buchung Entgelt\nTempelhof- TS280.052F Venezianische Glasperlen 13.02.2027 belegt Aufnahme in € 61.60\nSchöneberg selbst herstellen 10:00:00 Warteliste (erm. €\nmöglich 33.60)\nTempelhof- TS280.053F Glasperlen der Wikinger - 20.03.2027 > 2 € 61.60\nSchöneberg selbst gemacht 10:00:00 (erm. €\n33.60)\nTempelhof- TS280.054F Perlen dieser Welt 17.04.2027 > 2 € 61.60\nSchöneberg 10:00:00 (erm. €\n33.60)\nSeite 3 von 3"
+    "raw": "FK2.671 Goldschmieden mit Ruth 28.10.2026 belegt Aufnahme in € 152.00\nn-Kreuzberg 18:00:00 Warteliste (erm. €\nmöglich 112.00)\nTreptow- TK-2600-H Kunst aus Scherben - Mosaik 28.11.2026 belegt Aufnahme in € 44.00\nKöpenick 11:00:00 Warteliste (erm. €\nmöglich 24.00)\nCharlottenbu CW210-209H Goldschmieden: 29.10.2026 belegt Aufnahme in € 125.20\nrg- Schmuckdesign 1 18:00:00 Warteliste (erm. €\nWilmersdorf möglich 69.40)\nTempelhof- TS280.052F Venezianische Glasperlen 13.02.2027 belegt Aufnahme in € 61.60\nSchöneberg selbst herstellen 10:00:00 Warteliste (erm. €\nmöglich 33.60)\nTempelhof- TS280.053F Glasperlen der Wikinger - 20.03.2027 > 2 € 61.60\nSchöneberg selbst gemacht 10:00:00 (erm. €\n33.60)\nTempelhof- TS280.054F Perlen dieser Welt 17.04.2027 > 2 € 61.60\nSchöneberg 10:00:00 (erm. €\n33.60)\nSeite 2 von 2"
   }
 }
